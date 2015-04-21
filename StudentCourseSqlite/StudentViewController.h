@@ -12,10 +12,12 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <AddressBook/AddressBook.h>
+#import <AddressBookUI/AddressBookUI.h>
 #import "CourseDBManager.h"
 #import "StudentTableViewController.h"
 
-@interface StudentViewController : UIViewController <UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate>
+@interface StudentViewController : UIViewController <UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate, ABPeoplePickerNavigationControllerDelegate>
 
 @property (strong, nonatomic) StudentTableViewController *parent;
 @property (nonatomic) NSString *selectedStudent;

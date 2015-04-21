@@ -225,6 +225,41 @@
 
 - (IBAction)selectContacts:(id)sender {
     NSLog(@"Select from Contacts called");
+    ABPeoplePickerNavigationController *picker =
+    [[ABPeoplePickerNavigationController alloc] init];
+    picker.peoplePickerDelegate = self;
+    
+    [self presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker didSelectPerson:(ABRecordRef)person {
+    NSLog(@"ACCESSING: Person information");
+    NSString *firstName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
+    NSString *lastName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
+    ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
+    
+    NSString *fullName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+    
+    if (ABMultiValueGetCount(emails) > 0) {
+        NSString *email = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(emails, 0);
+        
+        self.emailField.text = email;
+        
+        CFRelease(emails);
+    }
+    
+    self.nameField.text = fullName;
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    return NO;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
@@ -244,7 +279,6 @@
         }
     }
 }
-
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
     return 1;
